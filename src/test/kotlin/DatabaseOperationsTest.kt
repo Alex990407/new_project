@@ -7,11 +7,6 @@ class DatabaseOperationsTest {
 
     @Test
     fun `test insertUser inserts user into the database`() {
-
-
         insertUser("Aleksandr Usyk", "usyk.aleksandr.@example.com", "77710777")
-
-
-
     }
 }

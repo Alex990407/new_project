@@ -1,5 +1,3 @@
-import connectToDatabase
-
 fun createUsersTable(tableName: String) {
     val connection = connectToDatabase()
     connection?.use {
@@ -45,11 +43,31 @@ fun insertCustomer(name: String, email: String, phoneNumber: String) {
     }
 }
 
-fun getCustomers(){
-    val connection = connectToDatabase()
-    val customers = connection?.use {
-        val query = "SELECT * FROM customers"
-        connection.prepareStatement(query).executeQuery()
-        val
+data class Customer(
+    val id: Int,
+    val name: String,
+    val email: String,
+    val phoneNumber: String,
+)
+
+fun getCustomers(): List<Customer> {
+    val customers = mutableListOf<Customer>()
+
+    connectToDatabase()?.use { connection ->
+        val query = "SELECT id, name, email, phone_number FROM customers"
+        val result = connection.createStatement().executeQuery(query)
+
+        while (result.next()) {
+            val customer = Customer(
+                id = result.getInt("id"),
+                name = result.getString("name"),
+                email = result.getString("email"),
+                phoneNumber = result.getString("phone_number"),
+            )
+
+            customers.add(customer)
+        }
     }
+
+    return customers
 }
