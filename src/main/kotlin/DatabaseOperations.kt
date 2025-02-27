@@ -71,3 +71,31 @@ fun getCustomers(): List<Customer> {
 
     return customers
 }
+
+data class User(
+    val id: Int,
+    val name: String,
+    val email: String,
+    val phoneNumber: String,
+)
+
+fun getUsers(): List<User> {
+    val users = mutableListOf<User>()
+
+    connectToDatabase()?.use { connection ->
+        val query = "SELECT id, name, email, phone_number FROM users"
+        val result = connection.createStatement().executeQuery(query)
+
+        while (result.next()) {
+            val user = User(
+                id = result.getInt("id"),
+                name = result.getString("name"),
+                email = result.getString("email"),
+                phoneNumber = result.getString("phone_number"),
+            )
+            users.add(user)
+        }
+    }
+
+    return users
+}
