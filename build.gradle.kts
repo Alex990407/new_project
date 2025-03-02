@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.apache.commons:commons-csv:1.10.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.8.10") // Использование актуальной версии Kotlin Test с JUnit 5
     testImplementation("io.mockk:mockk:1.13.5") // Обновление MockK до актуальной версии
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1") // Обновление JUnit до версии 5.9.1
