@@ -3,51 +3,53 @@ import org.junit.jupiter.api.Test
 import java.io.File
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
+import org.junit.jupiter.api.AfterEach
+import java.nio.file.Files
+import kotlin.io.path.Path
+import kotlin.io.path.deleteExisting
 import kotlin.test.assertEquals
 
 class CsvExporterTest {
+    private val outputDir = "src/test/tmp"
 
     @BeforeEach
     fun setUp() {
-
         clearTable("users")
         clearTable("customers")
 
-
         insertUser("Test User", "test@example.com", "123456789")
         insertCustomer("Test Customer", "customer@example.com", "987654321")
+    }
 
-
-        exportUsersToCSV("csv_exports/users.csv")
-        exportCustomersToCSV("csv_exports/customers.csv")
+    @AfterEach
+    fun tearDown() {
+        Files.deleteIfExists(Path("$outputDir/users.csv"))
+        Files.deleteIfExists(Path("$outputDir/customers.csv"))
     }
 
     @Test
     fun `test users in database match users in CSV`() {
-        val usersFromDb = getUsers()
-        val usersFromCsv = readUsersFromCSV("csv_exports/users.csv")
+        exportUsersToCSV("$outputDir/users.csv")
 
-        assertEquals(usersFromDb.size, usersFromCsv.size, "The number of records does not match!")
+        val usersFromCsv = readUsersFromCSV("$outputDir/users.csv")
+        assertEquals(1, usersFromCsv.size, "The number of records does not match!")
 
-        for (i in usersFromDb.indices) {
-            assertEquals(usersFromDb[i].name, usersFromCsv[i].name, "Username does not match")
-            assertEquals(usersFromDb[i].email, usersFromCsv[i].email, "Email does not match")
-            assertEquals(usersFromDb[i].phoneNumber, usersFromCsv[i].phoneNumber, "Phonenumbers does not match")
-        }
+        assertEquals("Test User", usersFromCsv[0].name, "Username does not match")
+        assertEquals("test@example.com", usersFromCsv[0].email, "Email does not match")
+        assertEquals("123456789", usersFromCsv[0].phoneNumber, "Phonenumbers does not match")
     }
 
     @Test
     fun `test customers in database match customers in CSV`() {
-        val customersFromDb = getCustomers()
-        val customersFromCsv = readCustomersFromCSV("csv_exports/customers.csv")
+        exportCustomersToCSV("$outputDir/customers.csv")
 
-        assertEquals(customersFromDb.size, customersFromCsv.size, "The number of records does not match!")
+        val customersFromCsv = readCustomersFromCSV("$outputDir/customers.csv")
 
-        for (i in customersFromDb.indices) {
-            assertEquals(customersFromDb[i].name, customersFromCsv[i].name, "Username does not match")
-            assertEquals(customersFromDb[i].email, customersFromCsv[i].email, "Email does not match")
-            assertEquals(customersFromDb[i].phoneNumber, customersFromCsv[i].phoneNumber, "Phonenumbers does not match")
-        }
+        assertEquals(1, customersFromCsv.size, "The number of records does not match!")
+
+        assertEquals("Test Customer", customersFromCsv[0].name, "Username does not match")
+        assertEquals("customer@example.com", customersFromCsv[0].email, "Email does not match")
+        assertEquals("987654321", customersFromCsv[0].phoneNumber, "Phonenumbers does not match")
     }
 
 
